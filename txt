@@ -1,0 +1,70 @@
+
+
+/*======== HTML ========*/
+
+<form action="">
+    <input type="text" name="search" id="search" onkeydown="pesquisar()">
+</form>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+            </tr>
+        </thead>
+        <tbody id="tableEncomenda">
+            <tr>
+                <td>TXT</td>
+            </tr>
+        </tbody>
+    </table>
+
+/*======== js ========*/
+
+<script>
+    function pesquisar() {
+        let termo_digitado = $('#search').val()
+        $.ajax({
+            type: 'GET',
+            data:{
+                termo:termo_digitado /* o termo será chamado no controller e vai receber o dado da var termo_diitado */
+            },
+            url: '{{route("admin.encomendas.pesquisar")}}', /* exemplo de rota */
+            success: function (data){ /* se funcionar */
+                console.log(data)
+                $('#tableEncomenda').html('') /* always that update clean the html */
+                $.each(data.encomendas function(index, encomenda){
+                    let trHtml =
+                    `
+                    <tr>
+                        <td>`+encomenda['endereco_entrega']+`</td>
+                        <td>`+encomenda['data_encomendada']+`</td>
+                        <td>`+encomenda['data_entrega']+`</td>
+                    </tr>
+                    `
+                    $('#tableEncomenda').append(trHtml)  /* added the content in html */
+                })
+            }
+            error: function (error){ /* se não funcionar */
+                console.error('Erro ao tentar pesquisar'.error)
+            }
+        })
+    }
+</script>
+
+<?php
+
+/*======== Controller ========*/
+
+    public function pesquisar(Request $request){
+        $data['encomenda'] = Encomenda::all();
+        return response()->json($data, 200);
+    }
+
+/*======== Rota ========*/
+
+    Route::prefix('admin/encomendas/')->group(function(){
+        Route::get('pesquisar', ['as' => 'admin.encomendas.pesquisar', 'uses' => 'AdminController@pesquisar'])->middleware('auth');
+    });
+
+?>
