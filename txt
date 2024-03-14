@@ -2,7 +2,7 @@
 
 /*======== HTML ========*/
 
-<form action="">
+<form>
     <input type="text" name="search" id="search" onkeydown="pesquisar()">
 </form>
 
